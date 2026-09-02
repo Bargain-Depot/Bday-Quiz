@@ -1,0 +1,450 @@
+/* ===========================
+   TINA'S 22ND BIRTHDAY QUIZ
+   =========================== */
+
+:root {
+  --cream: #f7edcf;
+  --cream-deep: #efdfb7;
+  --burgundy: #671709;
+  --burgundy-2: #7d2112;
+  --pink: #e7a5b7;
+  --ink: #4e170f;
+  --white: #fffaf0;
+  --shadow: rgba(80, 30, 15, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,.45), transparent 28%),
+    radial-gradient(circle at 82% 75%, rgba(255,255,255,.35), transparent 25%),
+    var(--cream);
+  color: var(--ink);
+  font-family: "Montserrat", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 7px;
+  border: 2px dashed #e46d78;
+  pointer-events: none;
+  z-index: 20;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 18px;
+  overflow: hidden;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 760px;
+  animation: fadeUp .45s ease both;
+}
+
+.screen.active {
+  display: block;
+}
+
+.card {
+  position: relative;
+  background: rgba(255, 248, 225, 0.66);
+  border: 1px solid rgba(103, 23, 9, .22);
+  box-shadow: 0 18px 50px var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+.intro-card,
+.result-card {
+  text-align: center;
+  padding: 54px 34px 44px;
+}
+
+.eyebrow {
+  font-family: "DM Serif Display", Georgia, serif;
+  letter-spacing: .28em;
+  font-size: .9rem;
+  color: var(--burgundy);
+}
+
+.script-title {
+  font-family: "Great Vibes", cursive;
+  color: var(--burgundy);
+  font-size: clamp(5rem, 17vw, 8.5rem);
+  line-height: .9;
+  font-weight: 400;
+  margin: 20px 0 12px;
+}
+
+.birthday-line {
+  font-family: "DM Serif Display", Georgia, serif;
+  color: var(--burgundy);
+  letter-spacing: .31em;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+}
+
+.divider {
+  width: 100px;
+  height: 1px;
+  background: var(--burgundy);
+  opacity: .4;
+  margin: 28px auto;
+}
+
+.intro-card h2 {
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: clamp(1.9rem, 6vw, 3.2rem);
+  line-height: 1.05;
+  color: var(--burgundy);
+}
+
+.intro-copy {
+  margin: 16px auto 0;
+  max-width: 430px;
+  line-height: 1.7;
+  color: #6c3e34;
+}
+
+.birthday-details {
+  margin: 26px auto;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: "DM Serif Display", Georgia, serif;
+  letter-spacing: .12em;
+  font-size: .88rem;
+  color: var(--burgundy);
+}
+
+.primary-btn {
+  width: 100%;
+  max-width: 380px;
+  border: 0;
+  background: var(--burgundy);
+  color: var(--white);
+  padding: 17px 22px;
+  cursor: pointer;
+  letter-spacing: .14em;
+  font-weight: 700;
+  box-shadow: 0 8px 0 #3f0d05;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.primary-btn:hover {
+  background: var(--burgundy-2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 0 #3f0d05;
+}
+
+.primary-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #3f0d05;
+}
+
+/* Quiz */
+
+.quiz-wrap {
+  max-width: 660px;
+  margin: auto;
+}
+
+.quiz-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+  color: var(--burgundy);
+}
+
+.mini-brand {
+  font-family: "Great Vibes", cursive;
+  font-size: 2rem;
+}
+
+.counter {
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.progress-track {
+  height: 8px;
+  background: rgba(103,23,9,.14);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 10%;
+  background: var(--burgundy);
+  transition: width .35s ease;
+}
+
+.question-card {
+  padding: 34px 26px 26px;
+}
+
+.question-number {
+  display: inline-grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(103,23,9,.35);
+  font-family: "DM Serif Display", Georgia, serif;
+  color: var(--burgundy);
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+}
+
+.question-text {
+  font-family: "DM Serif Display", Georgia, serif;
+  color: var(--burgundy);
+  font-size: clamp(1.7rem, 6vw, 2.6rem);
+  line-height: 1.1;
+  margin-bottom: 26px;
+}
+
+.answers {
+  display: grid;
+  gap: 13px;
+}
+
+.answer-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: rgba(255,250,240,.72);
+  color: var(--ink);
+  border: 1px solid rgba(103,23,9,.25);
+  padding: 15px;
+  cursor: pointer;
+  min-height: 64px;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.answer-btn:hover {
+  transform: translateX(4px);
+  border-color: var(--burgundy);
+  background: #fff8e7;
+}
+
+.answer-btn.selected {
+  background: var(--burgundy);
+  color: var(--white);
+  border-color: var(--burgundy);
+  transform: translateX(6px);
+}
+
+.answer-letter {
+  flex: 0 0 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 1.05rem;
+}
+
+.tap-hint {
+  text-align: center;
+  margin-top: 20px;
+  font-size: .78rem;
+  opacity: .63;
+}
+
+.back-btn {
+  border: 0;
+  background: transparent;
+  color: var(--burgundy);
+  padding: 18px 2px;
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+/* Results */
+
+.result-name {
+  margin-bottom: 8px;
+}
+
+.score-circle {
+  width: 170px;
+  height: 170px;
+  margin: 32px auto 26px;
+  border: 2px solid var(--burgundy);
+  border-radius: 50%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding-top: 43px;
+  color: var(--burgundy);
+}
+
+.score-circle span {
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 4.6rem;
+  line-height: 1;
+}
+
+.score-circle small {
+  font-size: 1rem;
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+.result-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: "DM Serif Display", Georgia, serif;
+  color: var(--burgundy);
+  font-size: clamp(1.8rem, 6vw, 2.7rem);
+  line-height: 1.1;
+}
+
+.result-emoji {
+  font-size: 2.6rem;
+}
+
+.result-subtext {
+  max-width: 430px;
+  margin: 16px auto 28px;
+  line-height: 1.65;
+  color: #6c3e34;
+}
+
+/* Doodles */
+
+.doodle {
+  position: absolute;
+  z-index: -1;
+  color: var(--burgundy);
+  opacity: .75;
+  font-size: clamp(2rem, 6vw, 4rem);
+  user-select: none;
+}
+
+.doodle-1 { top: 8%; left: 5%; transform: rotate(-20deg); }
+.doodle-2 { top: 16%; right: 8%; transform: rotate(22deg); }
+.doodle-3 { bottom: 8%; right: 4%; transform: rotate(7deg); }
+.doodle-4 { bottom: 19%; left: 6%; transform: rotate(-10deg); }
+.doodle-5 { top: 42%; left: 1%; transform: rotate(-20deg); }
+.doodle-6 { top: 44%; right: 2%; transform: rotate(18deg); }
+
+/* Confetti */
+
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -30px;
+  color: var(--burgundy);
+  animation: confettiFall linear forwards;
+}
+
+/* Animations */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(115vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .app-shell {
+    padding: 28px 15px;
+  }
+
+  .intro-card,
+  .result-card {
+    padding: 45px 20px 34px;
+  }
+
+  .question-card {
+    padding: 28px 18px 22px;
+  }
+
+  .eyebrow {
+    font-size: .72rem;
+    letter-spacing: .22em;
+  }
+
+  .birthday-line {
+    letter-spacing: .2em;
+  }
+
+  .quiz-top {
+    align-items: flex-end;
+  }
+
+  .counter {
+    font-size: .7rem;
+  }
+
+  .doodle {
+    opacity: .4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
