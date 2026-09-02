@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7edcf" />
+  <title>How Well Do You Know Tina?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="app-shell">
+
+    <!-- Decorative birthday doodles -->
+    <div class="doodle doodle-1">✦</div>
+    <div class="doodle doodle-2">⋆</div>
+    <div class="doodle doodle-3">🎂</div>
+    <div class="doodle doodle-4">✧</div>
+    <div class="doodle doodle-5">🎉</div>
+    <div class="doodle doodle-6">♡</div>
+
+    <!-- INTRO SCREEN -->
+    <section class="screen active" id="introScreen">
+      <div class="card intro-card">
+        <p class="eyebrow">YOU'RE INVITED TO...</p>
+        <h1 class="script-title">Tina's</h1>
+        <p class="birthday-line">22ND BIRTHDAY QUIZ</p>
+
+        <div class="divider"></div>
+
+        <h2>How Well Do You Know Tina?</h2>
+        <p class="intro-copy">
+          Ten questions. One point each. No cheating 👀
+        </p>
+
+        <div class="birthday-details">
+          <span>SEPTEMBER 5TH</span>
+          <span>•</span>
+          <span>TINA'S 22ND</span>
+        </div>
+
+        <button class="primary-btn" id="startBtn">START THE QUIZ</button>
+      </div>
+    </section>
+
+    <!-- QUIZ SCREEN -->
+    <section class="screen" id="quizScreen">
+      <div class="quiz-wrap">
+        <div class="quiz-top">
+          <p class="mini-brand">Tina's 22nd</p>
+          <p class="counter" id="counter">Question 1 of 10</p>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="card question-card">
+          <span class="question-number" id="questionNumber">01</span>
+          <h2 class="question-text" id="questionText"></h2>
+
+          <div class="answers" id="answers"></div>
+
+          <p class="tap-hint">Pick the answer you think Tina would choose.</p>
+        </div>
+
+        <button class="back-btn" id="backBtn" type="button">← BACK</button>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section class="screen" id="resultScreen">
+      <div class="card result-card">
+        <p class="eyebrow">THE RESULTS ARE IN...</p>
+        <h1 class="script-title result-name">Tina's</h1>
+        <p class="birthday-line">WHO KNOWS HER BEST?</p>
+
+        <div class="score-circle">
+          <span id="scoreNumber">10</span>
+          <small>/ 10</small>
+        </div>
+
+        <div class="result-message" id="resultMessage"></div>
+
+        <p class="result-subtext" id="resultSubtext"></p>
+
+        <button class="primary-btn" id="restartBtn">TRY AGAIN</button>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="confetti-container" id="confettiContainer" aria-hidden="true"></div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is Tina's go-to morning drink?",
+        answers: ["Matcha", "Refresher", "Coffee", "Tea"],
+        correct: 0
+      },
+      {
+        question: "What is Tina's least favorite food?",
+        answers: ["Pickles", "Pasta", "Pizza", "Tacos"],
+        correct: 0
+      },
+      {
+        question: "What type of movies does Tina like to watch?",
+        answers: ["True crime / documentaries", "Horror", "Comedy", "Romance"],
+        correct: 0
+      },
+      {
+        question: "What is Tina's favorite color?",
+        answers: ["Pink", "Purple", "Blue", "Red"],
+        correct: 0
+      },
+      {
+        question: "Which store would Tina most likely spend all her money in?",
+        answers: ["Marshall's", "Alo", "Brandy Melville", "Primark"],
+        correct: 0
+      },
+      {
+        question: "Where did Tina used to live when she was younger?",
+        answers: ["Virginia", "North Carolina", "Rhode Island", "New Hampshire"],
+        correct: 0
+      },
+      {
+        question: "What grade did Tina come to Malden?",
+        answers: ["5th grade", "6th grade", "4th grade", "7th grade"],
+        correct: 0
+      },
+      {
+        question: "What is Tina's favorite Disney movie?",
+        answers: ["High School Musical", "Let It Shine", "Camp Rock", "Lemonade Mouth"],
+        correct: 0
+      },
+      {
+        question: "Who is Tina's least favorite teacher?",
+        answers: ["Ms. Onofri", "Mr. Biscuit", "Mr. Aliberte", "Mr. Downey"],
+        correct: 1
+      },
+      {
+        question: "What sport did Tina play in 9th grade?",
+        answers: ["Basketball", "Soccer", "Tennis", "Football"],
+        correct: 0
+      }
+    ];
+
+    let currentQuestion = 0;
+    let selectedAnswers = Array(questions.length).fill(null);
+
+    const introScreen = document.getElementById("introScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
+    const startBtn = document.getElementById("startBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const backBtn = document.getElementById("backBtn");
+
+    const questionText = document.getElementById("questionText");
+    const questionNumber = document.getElementById("questionNumber");
+    const answersEl = document.getElementById("answers");
+    const counter = document.getElementById("counter");
+    const progressBar = document.getElementById("progressBar");
+
+    function showScreen(screen) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      screen.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+
+      questionNumber.textContent = String(currentQuestion + 1).padStart(2, "0");
+      questionText.textContent = q.question;
+      counter.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+      backBtn.style.visibility = currentQuestion === 0 ? "hidden" : "visible";
+      answersEl.innerHTML = "";
+
+      q.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.className = "answer-btn";
+        button.type = "button";
+        button.innerHTML = `
+          <span class="answer-letter">${String.fromCharCode(65 + index)}</span>
+          <span>${answer}</span>
+        `;
+
+        if (selectedAnswers[currentQuestion] === index) {
+          button.classList.add("selected");
+        }
+
+        button.addEventListener("click", () => chooseAnswer(index, button));
+        answersEl.appendChild(button);
+      });
+    }
+
+    function chooseAnswer(index, button) {
+      selectedAnswers[currentQuestion] = index;
+
+      document.querySelectorAll(".answer-btn").forEach(btn => {
+        btn.classList.remove("selected");
+      });
+      button.classList.add("selected");
+
+      setTimeout(() => {
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      }, 300);
+    }
+
+    function showResults() {
+      let score = 0;
+
+      selectedAnswers.forEach((answer, index) => {
+        if (answer === questions[index].correct) score++;
+      });
+
+      document.getElementById("scoreNumber").textContent = score;
+
+      let emoji = "";
+      let message = "";
+      let subtext = "";
+
+      if (score <= 2) {
+        emoji = "💀";
+        message = "Who even are you?!";
+        subtext = "Tina is requesting a friendship verification immediately.";
+      } else if (score <= 4) {
+        emoji = "😭";
+        message = "Ehhh... you don't know me too well oooo";
+        subtext = "You might need a Tina study guide.";
+      } else if (score <= 6) {
+        emoji = "👀";
+        message = "Okayyy you know a lil something";
+        subtext = "Not bad... you're paying attention.";
+      } else if (score <= 8) {
+        emoji = "🫶";
+        message = "You might be my friend fr";
+        subtext = "Okayyy, the friendship application is looking good.";
+      } else if (score === 9) {
+        emoji = "💗";
+        message = "Okayyy you my best frand";
+        subtext = "ONE question away from twin status 😭";
+      } else {
+        emoji = "👑";
+        message = "THAT'S MY TWINNNN";
+        subtext = "10/10. You know Tina TOO well 😭💗";
+      }
+
+      document.getElementById("resultMessage").innerHTML =
+        `<span class="result-emoji">${emoji}</span><strong>${message}</strong>`;
+      document.getElementById("resultSubtext").textContent = subtext;
+
+      showScreen(resultScreen);
+
+      if (score >= 9) {
+        launchConfetti();
+      }
+    }
+
+    function launchConfetti() {
+      const container = document.getElementById("confettiContainer");
+      container.innerHTML = "";
+
+      const pieces = 80;
+      const symbols = ["✦", "♥", "●", "★", "✧", "◆"];
+
+      for (let i = 0; i < pieces; i++) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+        piece.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.animationDelay = `${Math.random() * 1.2}s`;
+        piece.style.animationDuration = `${2.4 + Math.random() * 2}s`;
+        piece.style.fontSize = `${10 + Math.random() * 12}px`;
+        container.appendChild(piece);
+      }
+
+      setTimeout(() => {
+        container.innerHTML = "";
+      }, 5000);
+    }
+
+    startBtn.addEventListener("click", () => {
+      currentQuestion = 0;
+      selectedAnswers = Array(questions.length).fill(null);
+      renderQuestion();
+      showScreen(quizScreen);
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      currentQuestion = 0;
+      selectedAnswers = Array(questions.length).fill(null);
+      renderQuestion();
+      showScreen(quizScreen);
+    });
+  </script>
+</body>
+</html>
