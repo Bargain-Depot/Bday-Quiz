@@ -645,3 +645,446 @@ button {
   .admin-category-top { flex-direction: column; }
   .small-action-btn { width: 100%; }
 }
+
+
+.version-badge {
+  position: fixed;
+  right: 14px;
+  bottom: 11px;
+  z-index: 30;
+  font-size: .64rem;
+  letter-spacing: .08em;
+  color: rgba(103, 23, 9, .5);
+  pointer-events: none;
+}
+
+
+/* ===========================
+   CUTE INVITATION REFRESH v1.2
+   =========================== */
+
+:root {
+  --cream: #fff5dc;
+  --cream-deep: #f4e2b8;
+  --burgundy: #741d13;
+  --burgundy-2: #8d2a1c;
+  --pink: #e98fa8;
+  --pink-soft: #f8d8df;
+  --rose: #d96f88;
+  --ink: #59251d;
+  --white: #fffdf7;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 9%, rgba(255,255,255,.8), transparent 22%),
+    radial-gradient(circle at 88% 20%, rgba(248,216,223,.42), transparent 24%),
+    radial-gradient(circle at 13% 88%, rgba(248,216,223,.35), transparent 24%),
+    linear-gradient(180deg, #fff7df 0%, #f9edcd 100%);
+}
+
+body::before {
+  inset: 12px;
+  border: 2px dashed rgba(217,111,136,.9);
+  border-radius: 24px;
+}
+
+.app-shell {
+  padding: 44px 22px 58px;
+}
+
+.screen {
+  max-width: 710px;
+}
+
+.card {
+  background:
+    linear-gradient(rgba(255,253,247,.86), rgba(255,248,229,.86));
+  border: 1.5px solid rgba(116,29,19,.18);
+  border-radius: 30px;
+  box-shadow:
+    0 24px 55px rgba(91, 47, 28, .14),
+    0 3px 0 rgba(255,255,255,.85) inset;
+  overflow: visible;
+}
+
+.intro-card,
+.result-card {
+  padding: 62px 38px 44px;
+}
+
+.intro-card::before,
+.intro-card::after {
+  content: "♡";
+  position: absolute;
+  top: 24px;
+  color: rgba(217,111,136,.56);
+  font-size: 1.5rem;
+}
+
+.intro-card::before { left: 25px; transform: rotate(-15deg); }
+.intro-card::after  { right: 25px; transform: rotate(15deg); }
+
+.cute-topper {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px;
+  background: var(--pink-soft);
+  border: 1px solid rgba(116,29,19,.14);
+  border-radius: 999px;
+  color: var(--burgundy);
+  font-size: .88rem;
+  box-shadow: 0 8px 18px rgba(91,47,28,.10);
+}
+
+.cute-topper .tiny-heart {
+  color: var(--rose);
+  font-size: 1.15rem;
+}
+
+.bow {
+  width: 64px;
+  height: 34px;
+  margin: -6px auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.bow i {
+  width: 27px;
+  height: 22px;
+  background: var(--pink-soft);
+  border: 1px solid rgba(116,29,19,.18);
+  display: block;
+}
+
+.bow i:first-child {
+  border-radius: 60% 18% 60% 30%;
+  transform: rotate(11deg);
+}
+
+.bow i:last-child {
+  border-radius: 18% 60% 30% 60%;
+  transform: rotate(-11deg);
+}
+
+.bow b {
+  width: 15px;
+  height: 15px;
+  margin: 0 -2px;
+  background: var(--rose);
+  border-radius: 50%;
+  display: block;
+  z-index: 2;
+  box-shadow: 0 2px 0 rgba(116,29,19,.12);
+}
+
+.eyebrow {
+  font-size: .78rem;
+  letter-spacing: .34em;
+  font-weight: 700;
+}
+
+.script-title {
+  margin: 12px 0 10px;
+  text-shadow: 0 2px 0 rgba(255,255,255,.7);
+}
+
+.birthday-line {
+  font-size: clamp(.95rem, 3.6vw, 1.35rem);
+  letter-spacing: .26em;
+}
+
+.divider {
+  width: 84px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--rose), transparent);
+  opacity: .65;
+  margin: 26px auto;
+}
+
+.intro-card h2 {
+  font-size: clamp(2rem, 6.2vw, 3.1rem);
+  line-height: 1.02;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.cute-copy {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 7px 10px;
+  line-height: 1.2;
+  font-size: .95rem;
+  color: #7a4a41;
+}
+
+.copy-dot {
+  color: var(--rose);
+  font-size: 1rem;
+}
+
+.name-entry {
+  max-width: 390px;
+  margin: 28px auto 4px;
+  text-align: left;
+}
+
+.name-entry label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 9px 5px;
+  font-family: "Montserrat", Arial, sans-serif;
+  font-size: .8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--burgundy);
+}
+
+.label-heart {
+  font-size: 1rem;
+  color: var(--rose);
+}
+
+.name-entry input {
+  display: block;
+  width: 100%;
+  min-height: 54px;
+  border: 1.5px solid rgba(116,29,19,.18);
+  border-radius: 16px;
+  background: rgba(255,255,255,.78);
+  padding: 14px 17px;
+  box-shadow: 0 7px 18px rgba(91,47,28,.07) inset;
+  font-size: 1rem;
+}
+
+.name-entry input:focus {
+  border-color: var(--rose);
+  box-shadow:
+    0 0 0 4px rgba(233,143,168,.16),
+    0 7px 18px rgba(91,47,28,.05) inset;
+}
+
+.name-entry input::placeholder {
+  color: rgba(89,37,29,.38);
+}
+
+.birthday-details {
+  margin: 27px auto 25px;
+  width: fit-content;
+  padding: 10px 17px;
+  border: 1px solid rgba(116,29,19,.12);
+  border-radius: 999px;
+  background: rgba(248,216,223,.32);
+  gap: 8px;
+  letter-spacing: .1em;
+  font-size: .78rem;
+}
+
+.primary-btn {
+  border-radius: 18px;
+  min-height: 58px;
+  max-width: 390px;
+  background:
+    linear-gradient(180deg, var(--burgundy-2), var(--burgundy));
+  box-shadow:
+    0 7px 0 #4d1009,
+    0 11px 26px rgba(103,23,9,.18);
+}
+
+.sparkle-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.sparkle-btn span:last-child {
+  color: #f9cbd6;
+  font-size: 1rem;
+}
+
+.primary-btn:hover {
+  box-shadow:
+    0 9px 0 #4d1009,
+    0 14px 28px rgba(103,23,9,.2);
+}
+
+.doodle {
+  opacity: .52;
+  filter: saturate(.7);
+}
+
+.doodle-1,
+.doodle-2,
+.doodle-4,
+.doodle-6 {
+  color: var(--rose);
+}
+
+.version-badge {
+  right: 24px;
+  bottom: 18px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,253,247,.72);
+  border: 1px solid rgba(116,29,19,.08);
+  font-size: .54rem;
+  opacity: .58;
+}
+
+/* Make the rest of the site match the softer cute look */
+.question-card,
+.voting-card,
+.modal-card {
+  border-radius: 26px;
+}
+
+.progress-track {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(233,143,168,.2);
+}
+
+.progress-bar {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--rose), var(--burgundy));
+}
+
+.question-number {
+  border-radius: 16px;
+  background: var(--pink-soft);
+  border-color: rgba(116,29,19,.12);
+}
+
+.answer-btn,
+.nominee-btn {
+  border-radius: 16px;
+  background: rgba(255,255,255,.72);
+  border-color: rgba(116,29,19,.16);
+  box-shadow: 0 7px 18px rgba(91,47,28,.05);
+}
+
+.answer-btn:hover,
+.nominee-btn:hover:not(:disabled) {
+  background: #fff9ef;
+  border-color: var(--rose);
+}
+
+.answer-letter {
+  border-radius: 50%;
+  background: var(--pink-soft);
+  color: var(--burgundy);
+}
+
+.answer-btn.selected .answer-letter {
+  background: #fff7df;
+}
+
+.score-circle {
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 10px rgba(233,143,168,.12),
+    0 13px 28px rgba(91,47,28,.12);
+}
+
+.leaderboard-row,
+.admin-category-card {
+  border-radius: 15px;
+}
+
+.secondary-btn {
+  border-radius: 18px;
+  background: rgba(248,216,223,.28);
+}
+
+.vote-status {
+  border-radius: 14px;
+  background: rgba(248,216,223,.38);
+}
+
+.live-pill,
+.status-pill {
+  border-radius: 999px;
+  background: rgba(248,216,223,.42);
+}
+
+.modal-card {
+  border-color: rgba(116,29,19,.18);
+}
+
+@media (max-width: 600px) {
+  .app-shell {
+    padding: 52px 26px 68px;
+    align-items: flex-start;
+  }
+
+  body::before {
+    inset: 8px;
+    border-radius: 20px;
+  }
+
+  .intro-card,
+  .result-card {
+    padding: 54px 22px 34px;
+  }
+
+  .card {
+    border-radius: 24px;
+  }
+
+  .script-title {
+    font-size: clamp(4.7rem, 22vw, 7rem);
+  }
+
+  .intro-card h2 {
+    font-size: clamp(2rem, 10vw, 2.8rem);
+  }
+
+  .cute-copy {
+    font-size: .84rem;
+    gap: 5px 8px;
+  }
+
+  .name-entry {
+    width: 100%;
+    margin-top: 25px;
+  }
+
+  .name-entry input {
+    min-height: 56px;
+    font-size: 16px; /* prevents iOS zoom */
+  }
+
+  .birthday-details {
+    font-size: .7rem;
+    padding: 9px 12px;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    max-width: 100%;
+  }
+
+  .doodle-5 {
+    display: none;
+  }
+
+  .version-badge {
+    right: 17px;
+    bottom: 13px;
+  }
+}
