@@ -36,6 +36,12 @@
           Ten questions. One point each. No cheating 👀
         </p>
 
+        <div class="name-entry">
+          <label for="playerName">Your name</label>
+          <input id="playerName" type="text" maxlength="24" placeholder="Enter your name..." autocomplete="name" />
+          <p class="name-error" id="nameError"></p>
+        </div>
+
         <div class="birthday-details">
           <span>SEPTEMBER 5TH</span>
           <span>•</span>
@@ -87,70 +93,112 @@
 
         <p class="result-subtext" id="resultSubtext"></p>
 
-        <button class="primary-btn" id="restartBtn">TRY AGAIN</button>
+        <div class="leaderboard">
+          <div class="leaderboard-heading">
+            <p class="eyebrow leaderboard-eyebrow">BIRTHDAY LEADERBOARD</p>
+            <h2>Who Knows Tina Best?</h2>
+          </div>
+          <div class="leaderboard-list" id="leaderboardList"></div>
+        </div>
+
+        <div class="result-actions">
+          <button class="primary-btn" id="votingBtn">GO TO PARTY VOTING</button>
+          <button class="secondary-btn" id="restartBtn">PLAY QUIZ AGAIN</button>
+        </div>
       </div>
     </section>
+
+    <!-- PARTY VOTING SCREEN -->
+    <section class="screen" id="votingScreen">
+      <div class="quiz-wrap voting-wrap">
+        <div class="quiz-top">
+          <p class="mini-brand">Tina's 22nd</p>
+          <button class="text-btn" id="backToResultsBtn" type="button">← RESULTS</button>
+        </div>
+
+        <div class="card voting-card">
+          <p class="eyebrow">KARAOKE PARTY</p>
+          <h1 class="vote-title">Party Voting</h1>
+          <p class="intro-copy vote-copy">
+            Vote for your favorite performances. Open categories will appear here as Tina starts them.
+          </p>
+
+          <div id="voteStatus" class="vote-status"></div>
+          <div id="categoriesList" class="categories-list"></div>
+        </div>
+
+        <button class="admin-link" id="adminOpenBtn" type="button">Party host controls</button>
+      </div>
+    </section>
+
+    <!-- ADMIN MODAL -->
+    <div class="modal" id="adminModal" aria-hidden="true">
+      <div class="modal-backdrop" id="adminBackdrop"></div>
+      <div class="modal-card">
+        <button class="modal-close" id="adminCloseBtn" type="button">×</button>
+
+        <div id="adminLoginView">
+          <p class="eyebrow">HOST ONLY</p>
+          <h2>Party Controls</h2>
+          <p class="modal-copy">Enter the host PIN to create categories and open or close voting.</p>
+          <input id="adminPinInput" class="admin-input" type="password" inputmode="numeric" maxlength="8" placeholder="Host PIN" />
+          <p class="name-error" id="adminError"></p>
+          <button class="primary-btn" id="adminLoginBtn" type="button">UNLOCK</button>
+        </div>
+
+        <div id="adminPanelView" class="hidden">
+          <div class="admin-heading">
+            <div>
+              <p class="eyebrow">HOST CONTROLS</p>
+              <h2>Voting Categories</h2>
+            </div>
+            <button class="text-btn" id="refreshAdminBtn" type="button">Refresh</button>
+          </div>
+
+          <div class="admin-create">
+            <label>Category name</label>
+            <input id="categoryNameInput" class="admin-input" type="text" maxlength="60" placeholder="Best Disney Performance" />
+
+            <label>Nominees / performers</label>
+            <textarea id="nomineesInput" class="admin-input admin-textarea" rows="5" placeholder="Tina&#10;Anwar&#10;Maya&#10;Jordan"></textarea>
+            <small>Put one name on each line.</small>
+
+            <button class="primary-btn" id="createCategoryBtn" type="button">CREATE & OPEN VOTE</button>
+            <p class="name-error" id="createCategoryError"></p>
+          </div>
+
+          <div class="admin-category-list" id="adminCategoryList"></div>
+        </div>
+      </div>
+    </div>
 
   </main>
 
   <div class="confetti-container" id="confettiContainer" aria-hidden="true"></div>
 
   <script>
+    // SHARED LEADERBOARD:
+    // Paste your Google Apps Script Web App /exec URL here after deployment.
+    const LEADERBOARD_URL = "https://script.google.com/macros/s/AKfycbxf8xjuqYjf4yrv8jeRD6VbOhn6Wc7aPXtAQTz0xEj2Cbfkt6daGZS98S6rlFzpMeVq/exec";
+
     const questions = [
-      {
-        question: "What is Tina's go-to morning drink?",
-        answers: ["Matcha", "Refresher", "Coffee", "Tea"],
-        correct: 0
-      },
-      {
-        question: "What is Tina's least favorite food?",
-        answers: ["Pickles", "Pasta", "Pizza", "Tacos"],
-        correct: 0
-      },
-      {
-        question: "What type of movies does Tina like to watch?",
-        answers: ["True crime / documentaries", "Horror", "Comedy", "Romance"],
-        correct: 0
-      },
-      {
-        question: "What is Tina's favorite color?",
-        answers: ["Pink", "Purple", "Blue", "Red"],
-        correct: 0
-      },
-      {
-        question: "Which store would Tina most likely spend all her money in?",
-        answers: ["Marshall's", "Alo", "Brandy Melville", "Primark"],
-        correct: 0
-      },
-      {
-        question: "Where did Tina used to live when she was younger?",
-        answers: ["Virginia", "North Carolina", "Rhode Island", "New Hampshire"],
-        correct: 0
-      },
-      {
-        question: "What grade did Tina come to Malden?",
-        answers: ["5th grade", "6th grade", "4th grade", "7th grade"],
-        correct: 0
-      },
-      {
-        question: "What is Tina's favorite Disney movie?",
-        answers: ["High School Musical", "Let It Shine", "Camp Rock", "Lemonade Mouth"],
-        correct: 0
-      },
-      {
-        question: "Who is Tina's least favorite teacher?",
-        answers: ["Ms. Onofri", "Mr. Biscuit", "Mr. Aliberte", "Mr. Downey"],
-        correct: 1
-      },
-      {
-        question: "What sport did Tina play in 9th grade?",
-        answers: ["Basketball", "Soccer", "Tennis", "Football"],
-        correct: 0
-      }
+      { question: "What is Tina's go-to morning drink?", answers: ["Matcha", "Refresher", "Coffee", "Tea"], correctAnswer: "Matcha" },
+      { question: "What is Tina's least favorite food?", answers: ["Pickles", "Pasta", "Pizza", "Tacos"], correctAnswer: "Pickles" },
+      { question: "What type of movies does Tina like to watch?", answers: ["True crime / documentaries", "Horror", "Comedy", "Romance"], correctAnswer: "True crime / documentaries" },
+      { question: "What is Tina's favorite color?", answers: ["Pink", "Purple", "Blue", "Red"], correctAnswer: "Pink" },
+      { question: "Which store would Tina most likely spend all her money in?", answers: ["Marshall's", "Alo", "Brandy Melville", "Primark"], correctAnswer: "Marshall's" },
+      { question: "Where did Tina used to live when she was younger?", answers: ["Virginia", "North Carolina", "Rhode Island", "New Hampshire"], correctAnswer: "Virginia" },
+      { question: "What grade did Tina come to Malden?", answers: ["5th grade", "6th grade", "4th grade", "7th grade"], correctAnswer: "5th grade" },
+      { question: "What is Tina's favorite Disney movie?", answers: ["High School Musical", "Let It Shine", "Camp Rock", "Lemonade Mouth"], correctAnswer: "High School Musical" },
+      { question: "Who is Tina's least favorite teacher?", answers: ["Ms. Onofri", "Mr. Biscuit", "Mr. Aliberte", "Mr. Downey"], correctAnswer: "Mr. Biscuit" },
+      { question: "What sport did Tina play in 9th grade?", answers: ["Basketball", "Soccer", "Tennis", "Football"], correctAnswer: "Basketball" }
     ];
 
     let currentQuestion = 0;
     let selectedAnswers = Array(questions.length).fill(null);
+    let shuffledAnswers = [];
+    let playerName = "";
+    let quizSubmitted = false;
 
     const introScreen = document.getElementById("introScreen");
     const quizScreen = document.getElementById("quizScreen");
@@ -158,12 +206,51 @@
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
     const backBtn = document.getElementById("backBtn");
-
+    const playerNameInput = document.getElementById("playerName");
+    const nameError = document.getElementById("nameError");
     const questionText = document.getElementById("questionText");
     const questionNumber = document.getElementById("questionNumber");
     const answersEl = document.getElementById("answers");
     const counter = document.getElementById("counter");
     const progressBar = document.getElementById("progressBar");
+    const leaderboardList = document.getElementById("leaderboardList");
+    const votingScreen = document.getElementById("votingScreen");
+    const votingBtn = document.getElementById("votingBtn");
+    const backToResultsBtn = document.getElementById("backToResultsBtn");
+    const categoriesList = document.getElementById("categoriesList");
+    const voteStatus = document.getElementById("voteStatus");
+
+    const adminModal = document.getElementById("adminModal");
+    const adminOpenBtn = document.getElementById("adminOpenBtn");
+    const adminCloseBtn = document.getElementById("adminCloseBtn");
+    const adminBackdrop = document.getElementById("adminBackdrop");
+    const adminLoginView = document.getElementById("adminLoginView");
+    const adminPanelView = document.getElementById("adminPanelView");
+    const adminPinInput = document.getElementById("adminPinInput");
+    const adminError = document.getElementById("adminError");
+    const adminLoginBtn = document.getElementById("adminLoginBtn");
+    const categoryNameInput = document.getElementById("categoryNameInput");
+    const nomineesInput = document.getElementById("nomineesInput");
+    const createCategoryBtn = document.getElementById("createCategoryBtn");
+    const createCategoryError = document.getElementById("createCategoryError");
+    const adminCategoryList = document.getElementById("adminCategoryList");
+    const refreshAdminBtn = document.getElementById("refreshAdminBtn");
+    let adminPin = "";
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function prepareQuiz() {
+      shuffledAnswers = questions.map(q => shuffle(q.answers));
+      selectedAnswers = Array(questions.length).fill(null);
+      currentQuestion = 0;
+    }
 
     function showScreen(screen) {
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -173,109 +260,396 @@
 
     function renderQuestion() {
       const q = questions[currentQuestion];
-
+      const answers = shuffledAnswers[currentQuestion];
       questionNumber.textContent = String(currentQuestion + 1).padStart(2, "0");
       questionText.textContent = q.question;
       counter.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
       progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
-
       backBtn.style.visibility = currentQuestion === 0 ? "hidden" : "visible";
       answersEl.innerHTML = "";
 
-      q.answers.forEach((answer, index) => {
+      answers.forEach((answer, index) => {
         const button = document.createElement("button");
         button.className = "answer-btn";
         button.type = "button";
-        button.innerHTML = `
-          <span class="answer-letter">${String.fromCharCode(65 + index)}</span>
-          <span>${answer}</span>
-        `;
-
-        if (selectedAnswers[currentQuestion] === index) {
-          button.classList.add("selected");
-        }
-
-        button.addEventListener("click", () => chooseAnswer(index, button));
+        button.innerHTML = `<span class="answer-letter">${String.fromCharCode(65 + index)}</span><span>${answer}</span>`;
+        if (selectedAnswers[currentQuestion] === answer) button.classList.add("selected");
+        button.addEventListener("click", () => chooseAnswer(answer, button));
         answersEl.appendChild(button);
       });
     }
 
-    function chooseAnswer(index, button) {
-      selectedAnswers[currentQuestion] = index;
-
-      document.querySelectorAll(".answer-btn").forEach(btn => {
-        btn.classList.remove("selected");
-      });
+    function chooseAnswer(answer, button) {
+      if (quizSubmitted) return;
+      selectedAnswers[currentQuestion] = answer;
+      document.querySelectorAll(".answer-btn").forEach(btn => btn.classList.remove("selected"));
       button.classList.add("selected");
-
       setTimeout(() => {
         if (currentQuestion < questions.length - 1) {
           currentQuestion++;
           renderQuestion();
         } else {
+          quizSubmitted = true;
           showResults();
         }
       }, 300);
     }
 
-    function showResults() {
-      let score = 0;
+    function cloudLeaderboardEnabled() {
+      return LEADERBOARD_URL.startsWith("https://script.google.com/");
+    }
 
-      selectedAnswers.forEach((answer, index) => {
-        if (answer === questions[index].correct) score++;
+    function getLocalLeaderboard() {
+      try {
+        return JSON.parse(localStorage.getItem("tinaBirthdayLeaderboard") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLocalScore(name, score) {
+      const leaderboard = getLocalLeaderboard();
+      leaderboard.push({ name, score, createdAt: Date.now() });
+      leaderboard.sort((a, b) =>
+        b.score !== a.score ? b.score - a.score : a.createdAt - b.createdAt
+      );
+      localStorage.setItem(
+        "tinaBirthdayLeaderboard",
+        JSON.stringify(leaderboard.slice(0, 50))
+      );
+    }
+
+    function jsonpRequest(params = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName =
+          "tinaLeaderboardCallback_" +
+          Date.now() +
+          "_" +
+          Math.floor(Math.random() * 100000);
+
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("Leaderboard request timed out."));
+        }, 10000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callbackName] = data => {
+          cleanup();
+          resolve(data);
+        };
+
+        const query = new URLSearchParams({
+          ...params,
+          callback: callbackName,
+          _: Date.now().toString()
+        });
+
+        script.src = `${LEADERBOARD_URL}?${query.toString()}`;
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("Could not connect to the leaderboard."));
+        };
+
+        document.body.appendChild(script);
       });
+    }
 
+    async function saveCloudScore(name, score) {
+      return jsonpRequest({
+        action: "save",
+        name,
+        score: String(score)
+      });
+    }
+
+    async function getCloudLeaderboard() {
+      const response = await jsonpRequest({ action: "leaderboard" });
+      return Array.isArray(response.leaderboard) ? response.leaderboard : [];
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderLeaderboardEntries(leaderboard) {
+      if (!leaderboard.length) {
+        leaderboardList.innerHTML =
+          '<p class="leaderboard-empty">No scores yet — be the first 👀</p>';
+        return;
+      }
+
+      leaderboardList.innerHTML = leaderboard.slice(0, 10).map((entry, index) => {
+        const rank =
+          index === 0 ? "🥇" :
+          index === 1 ? "🥈" :
+          index === 2 ? "🥉" :
+          `${index + 1}`;
+
+        const isCurrent =
+          String(entry.name).trim().toLowerCase() === playerName.trim().toLowerCase();
+
+        return `<div class="leaderboard-row ${isCurrent ? "current-player" : ""}">
+          <span class="rank">${rank}</span>
+          <span class="leader-name">${escapeHtml(entry.name)}</span>
+          <span class="leader-score">${Number(entry.score)}/10</span>
+        </div>`;
+      }).join("");
+    }
+
+    async function saveAndRenderLeaderboard(score) {
+      leaderboardList.innerHTML =
+        '<p class="leaderboard-empty leaderboard-loading">Updating the birthday leaderboard... 💗</p>';
+
+      if (!cloudLeaderboardEnabled()) {
+        saveLocalScore(playerName, score);
+        renderLeaderboardEntries(getLocalLeaderboard());
+        return;
+      }
+
+      try {
+        const saveResponse = await saveCloudScore(playerName, score);
+        if (!saveResponse || saveResponse.ok !== true) {
+          throw new Error(saveResponse?.error || "Could not save score.");
+        }
+
+        const leaderboard = await getCloudLeaderboard();
+        renderLeaderboardEntries(leaderboard);
+      } catch (error) {
+        console.error(error);
+        leaderboardList.innerHTML = `
+          <p class="leaderboard-empty">
+            Your score was ${score}/10, but the live leaderboard couldn't load.
+            Please refresh in a moment. 💗
+          </p>`;
+      }
+    }
+
+
+    function getVoterId() {
+      let id = localStorage.getItem("tinaBirthdayVoterId");
+      if (!id) {
+        id = "v_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem("tinaBirthdayVoterId", id);
+      }
+      return id;
+    }
+
+    async function getVotingCategories(includeResults = false) {
+      if (!cloudLeaderboardEnabled()) return [];
+      const response = await jsonpRequest({
+        action: "vote_categories",
+        includeResults: includeResults ? "1" : "0"
+      });
+      if (!response?.ok) throw new Error(response?.error || "Could not load voting.");
+      return Array.isArray(response.categories) ? response.categories : [];
+    }
+
+    async function submitPartyVote(categoryId, nominee) {
+      if (!cloudLeaderboardEnabled()) {
+        throw new Error("Shared voting needs the Google Apps Script URL first.");
+      }
+      const response = await jsonpRequest({
+        action: "cast_vote",
+        categoryId,
+        nominee,
+        voterId: getVoterId(),
+        voterName: playerName || "Guest"
+      });
+      if (!response?.ok) throw new Error(response?.error || "Could not submit vote.");
+      return response;
+    }
+
+    async function renderVoting() {
+      voteStatus.textContent = "Loading open votes... 💗";
+      categoriesList.innerHTML = "";
+
+      if (!cloudLeaderboardEnabled()) {
+        voteStatus.innerHTML = "Connect the Google Apps Script Web App first to enable shared party voting.";
+        return;
+      }
+
+      try {
+        const categories = await getVotingCategories(false);
+        const open = categories.filter(c => c.status === "open");
+
+        if (!open.length) {
+          voteStatus.textContent = "No vote is open right now. Check back when the next category starts 🎤";
+          return;
+        }
+
+        voteStatus.textContent = `${open.length} vote${open.length === 1 ? "" : "s"} open right now`;
+
+        categoriesList.innerHTML = open.map(category => {
+          const votedKey = `tinaVote_${category.id}`;
+          const alreadyVoted = localStorage.getItem(votedKey);
+
+          const nomineeButtons = category.nominees.map(nominee => `
+            <button class="nominee-btn" type="button"
+              data-category="${escapeHtml(category.id)}"
+              data-nominee="${escapeHtml(nominee)}"
+              ${alreadyVoted ? "disabled" : ""}>
+              <span>${escapeHtml(nominee)}</span>
+              ${alreadyVoted === nominee ? '<span class="voted-mark">✓ Voted</span>' : ""}
+            </button>
+          `).join("");
+
+          return `
+            <article class="vote-category">
+              <div class="vote-category-head">
+                <span class="live-pill">VOTING OPEN</span>
+                <h2>${escapeHtml(category.name)}</h2>
+              </div>
+              <div class="nominees-grid">${nomineeButtons}</div>
+              ${alreadyVoted ? `<p class="already-voted">Your vote is in for <strong>${escapeHtml(alreadyVoted)}</strong> 💗</p>` : ""}
+            </article>
+          `;
+        }).join("");
+
+        document.querySelectorAll(".nominee-btn:not([disabled])").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const categoryId = btn.dataset.category;
+            const nominee = btn.dataset.nominee;
+            const yes = confirm(`Vote for ${nominee}? You can only vote once in this category.`);
+            if (!yes) return;
+
+            btn.disabled = true;
+            try {
+              await submitPartyVote(categoryId, nominee);
+              localStorage.setItem(`tinaVote_${categoryId}`, nominee);
+              await renderVoting();
+            } catch (error) {
+              btn.disabled = false;
+              alert(error.message);
+            }
+          });
+        });
+      } catch (error) {
+        voteStatus.textContent = "Could not load the party votes right now. Try again in a moment.";
+        console.error(error);
+      }
+    }
+
+    function openAdminModal() {
+      adminModal.classList.add("open");
+      adminModal.setAttribute("aria-hidden", "false");
+      adminLoginView.classList.remove("hidden");
+      adminPanelView.classList.add("hidden");
+      adminPinInput.value = "";
+      adminError.textContent = "";
+    }
+
+    function closeAdminModal() {
+      adminModal.classList.remove("open");
+      adminModal.setAttribute("aria-hidden", "true");
+    }
+
+    async function adminRequest(params = {}) {
+      if (!cloudLeaderboardEnabled()) throw new Error("Connect the Google Apps Script URL first.");
+      const response = await jsonpRequest({ ...params, pin: adminPin });
+      if (!response?.ok) throw new Error(response?.error || "Admin request failed.");
+      return response;
+    }
+
+    async function loadAdminCategories() {
+      adminCategoryList.innerHTML = '<p class="leaderboard-empty leaderboard-loading">Loading categories...</p>';
+      try {
+        const response = await adminRequest({ action: "admin_categories" });
+        const categories = response.categories || [];
+
+        if (!categories.length) {
+          adminCategoryList.innerHTML = '<p class="leaderboard-empty">No categories yet.</p>';
+          return;
+        }
+
+        adminCategoryList.innerHTML = categories.map(category => {
+          const results = category.results || [];
+          const totalVotes = results.reduce((sum, r) => sum + Number(r.votes || 0), 0);
+          const winner = results.length ? results[0] : null;
+
+          return `
+            <div class="admin-category-card">
+              <div class="admin-category-top">
+                <div>
+                  <span class="status-pill ${category.status}">${category.status.toUpperCase()}</span>
+                  <h3>${escapeHtml(category.name)}</h3>
+                  <p>${totalVotes} vote${totalVotes === 1 ? "" : "s"}${winner && totalVotes ? ` • Leader: ${escapeHtml(winner.nominee)} (${winner.votes})` : ""}</p>
+                </div>
+                <button class="small-action-btn toggle-vote-btn"
+                  data-id="${escapeHtml(category.id)}"
+                  data-status="${escapeHtml(category.status)}">
+                  ${category.status === "open" ? "Close Vote" : "Open Vote"}
+                </button>
+              </div>
+              <div class="admin-results">
+                ${results.map((r, i) => `
+                  <div class="admin-result-row">
+                    <span>${i + 1}. ${escapeHtml(r.nominee)}</span>
+                    <strong>${r.votes}</strong>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        document.querySelectorAll(".toggle-vote-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            btn.disabled = true;
+            try {
+              await adminRequest({
+                action: "set_vote_status",
+                categoryId: btn.dataset.id,
+                status: btn.dataset.status === "open" ? "closed" : "open"
+              });
+              await loadAdminCategories();
+              await renderVoting();
+            } catch (error) {
+              alert(error.message);
+              btn.disabled = false;
+            }
+          });
+        });
+      } catch (error) {
+        adminCategoryList.innerHTML = `<p class="leaderboard-empty">${escapeHtml(error.message)}</p>`;
+      }
+    }
+
+    async function showResults() {
+      let score = 0;
+      selectedAnswers.forEach((answer, index) => { if (answer === questions[index].correctAnswer) score++; });
       document.getElementById("scoreNumber").textContent = score;
 
-      let emoji = "";
-      let message = "";
-      let subtext = "";
+      let emoji = "", message = "", subtext = "";
+      if (score <= 2) { emoji = "💀"; message = "Who even are you?!"; subtext = `${playerName}, Tina is requesting a friendship verification immediately.`; }
+      else if (score <= 4) { emoji = "😭"; message = "Ehhh... you don't know me too well oooo"; subtext = `${playerName}, you might need a Tina study guide.`; }
+      else if (score <= 6) { emoji = "👀"; message = "Okayyy you know a lil something"; subtext = "Not bad... you're paying attention."; }
+      else if (score <= 8) { emoji = "🫶"; message = "You might be my friend fr"; subtext = "Okayyy, the friendship application is looking good."; }
+      else if (score === 9) { emoji = "💗"; message = "Okayyy you my best frand"; subtext = "ONE question away from twin status 😭"; }
+      else { emoji = "👑"; message = "THAT'S MY TWINNNN"; subtext = "10/10. You know Tina TOO well 😭💗"; }
 
-      if (score <= 2) {
-        emoji = "💀";
-        message = "Who even are you?!";
-        subtext = "Tina is requesting a friendship verification immediately.";
-      } else if (score <= 4) {
-        emoji = "😭";
-        message = "Ehhh... you don't know me too well oooo";
-        subtext = "You might need a Tina study guide.";
-      } else if (score <= 6) {
-        emoji = "👀";
-        message = "Okayyy you know a lil something";
-        subtext = "Not bad... you're paying attention.";
-      } else if (score <= 8) {
-        emoji = "🫶";
-        message = "You might be my friend fr";
-        subtext = "Okayyy, the friendship application is looking good.";
-      } else if (score === 9) {
-        emoji = "💗";
-        message = "Okayyy you my best frand";
-        subtext = "ONE question away from twin status 😭";
-      } else {
-        emoji = "👑";
-        message = "THAT'S MY TWINNNN";
-        subtext = "10/10. You know Tina TOO well 😭💗";
-      }
-
-      document.getElementById("resultMessage").innerHTML =
-        `<span class="result-emoji">${emoji}</span><strong>${message}</strong>`;
+      document.getElementById("resultMessage").innerHTML = `<span class="result-emoji">${emoji}</span><strong>${message}</strong>`;
       document.getElementById("resultSubtext").textContent = subtext;
-
       showScreen(resultScreen);
-
-      if (score >= 9) {
-        launchConfetti();
-      }
+      await saveAndRenderLeaderboard(score);
+      if (score >= 9) launchConfetti();
     }
 
     function launchConfetti() {
       const container = document.getElementById("confettiContainer");
       container.innerHTML = "";
-
-      const pieces = 80;
       const symbols = ["✦", "♥", "●", "★", "✧", "◆"];
-
-      for (let i = 0; i < pieces; i++) {
+      for (let i = 0; i < 80; i++) {
         const piece = document.createElement("span");
         piece.className = "confetti-piece";
         piece.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -285,31 +659,102 @@
         piece.style.fontSize = `${10 + Math.random() * 12}px`;
         container.appendChild(piece);
       }
-
-      setTimeout(() => {
-        container.innerHTML = "";
-      }, 5000);
+      setTimeout(() => container.innerHTML = "", 5000);
     }
 
     startBtn.addEventListener("click", () => {
-      currentQuestion = 0;
-      selectedAnswers = Array(questions.length).fill(null);
+      const typedName = playerNameInput.value.trim();
+      if (!typedName) {
+        nameError.textContent = "Put your name first so you can join the leaderboard 💗";
+        playerNameInput.focus();
+        return;
+      }
+      playerName = typedName;
+      nameError.textContent = "";
+      quizSubmitted = false;
+      prepareQuiz();
       renderQuestion();
       showScreen(quizScreen);
     });
 
-    backBtn.addEventListener("click", () => {
-      if (currentQuestion > 0) {
-        currentQuestion--;
-        renderQuestion();
+    playerNameInput.addEventListener("input", () => { if (playerNameInput.value.trim()) nameError.textContent = ""; });
+    playerNameInput.addEventListener("keydown", event => { if (event.key === "Enter") startBtn.click(); });
+    backBtn.addEventListener("click", () => { if (currentQuestion > 0) { currentQuestion--; renderQuestion(); } });
+
+    votingBtn.addEventListener("click", async () => {
+      showScreen(votingScreen);
+      await renderVoting();
+    });
+
+    backToResultsBtn.addEventListener("click", () => showScreen(resultScreen));
+
+    adminOpenBtn.addEventListener("click", openAdminModal);
+    adminCloseBtn.addEventListener("click", closeAdminModal);
+    adminBackdrop.addEventListener("click", closeAdminModal);
+
+    adminLoginBtn.addEventListener("click", async () => {
+      adminPin = adminPinInput.value.trim();
+      if (!adminPin) {
+        adminError.textContent = "Enter the host PIN.";
+        return;
+      }
+      adminError.textContent = "Checking...";
+      try {
+        await adminRequest({ action: "admin_categories" });
+        adminError.textContent = "";
+        adminLoginView.classList.add("hidden");
+        adminPanelView.classList.remove("hidden");
+        await loadAdminCategories();
+      } catch (error) {
+        adminError.textContent = "That PIN didn't work.";
       }
     });
 
+    createCategoryBtn.addEventListener("click", async () => {
+      const name = categoryNameInput.value.trim();
+      const nominees = nomineesInput.value
+        .split("\n")
+        .map(v => v.trim())
+        .filter(Boolean);
+
+      if (!name) {
+        createCategoryError.textContent = "Add a category name.";
+        return;
+      }
+      if (nominees.length < 2) {
+        createCategoryError.textContent = "Add at least two nominees.";
+        return;
+      }
+
+      createCategoryError.textContent = "Creating vote...";
+      createCategoryBtn.disabled = true;
+
+      try {
+        await adminRequest({
+          action: "create_vote_category",
+          categoryName: name,
+          nominees: nominees.join("|||")
+        });
+        categoryNameInput.value = "";
+        nomineesInput.value = "";
+        createCategoryError.textContent = "";
+        await loadAdminCategories();
+        await renderVoting();
+      } catch (error) {
+        createCategoryError.textContent = error.message;
+      } finally {
+        createCategoryBtn.disabled = false;
+      }
+    });
+
+    refreshAdminBtn.addEventListener("click", loadAdminCategories);
+
     restartBtn.addEventListener("click", () => {
-      currentQuestion = 0;
-      selectedAnswers = Array(questions.length).fill(null);
-      renderQuestion();
-      showScreen(quizScreen);
+      playerNameInput.value = "";
+      playerName = "";
+      quizSubmitted = false;
+      nameError.textContent = "";
+      showScreen(introScreen);
     });
   </script>
 </body>
