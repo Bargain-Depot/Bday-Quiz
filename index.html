@@ -4,11 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f7edcf" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="app-version" content="1.1.0" />
   <title>How Well Do You Know Tina?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=1.1.0" />
 </head>
 <body>
 
@@ -172,11 +176,15 @@
       </div>
     </div>
 
+      <p class="version-badge">v1.1.0</p>
   </main>
 
   <div class="confetti-container" id="confettiContainer" aria-hidden="true"></div>
 
   <script>
+    const APP_VERSION = "1.1.0";
+    console.log("Tina Birthday Quiz version", APP_VERSION);
+
     // SHARED LEADERBOARD:
     // Paste your Google Apps Script Web App /exec URL here after deployment.
     const LEADERBOARD_URL = "https://script.google.com/macros/s/AKfycbxf8xjuqYjf4yrv8jeRD6VbOhn6Wc7aPXtAQTz0xEj2Cbfkt6daGZS98S6rlFzpMeVq/exec";
