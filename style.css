@@ -1088,3 +1088,9 @@ body::before {
     bottom: 13px;
   }
 }
+
+
+/* v1.2.1 — remove fixed dotted viewport border */
+body::before {
+  display: none !important;
+}
