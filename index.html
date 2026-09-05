@@ -7,12 +7,12 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="app-version" content="1.1.0" />
+  <meta name="app-version" content="1.2.0" />
   <title>How Well Do You Know Tina?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.1.0" />
+  <link rel="stylesheet" href="style.css?v=1.2.0" />
 </head>
 <body>
 
@@ -29,6 +29,10 @@
     <!-- INTRO SCREEN -->
     <section class="screen active" id="introScreen">
       <div class="card intro-card">
+        <div class="cute-topper" aria-hidden="true">
+          <span>✦</span><span class="tiny-heart">♡</span><span>✦</span>
+        </div>
+        <div class="bow" aria-hidden="true"><i></i><b></b><i></i></div>
         <p class="eyebrow">YOU'RE INVITED TO...</p>
         <h1 class="script-title">Tina's</h1>
         <p class="birthday-line">22ND BIRTHDAY QUIZ</p>
@@ -36,12 +40,16 @@
         <div class="divider"></div>
 
         <h2>How Well Do You Know Tina?</h2>
-        <p class="intro-copy">
-          Ten questions. One point each. No cheating 👀
+        <p class="intro-copy cute-copy">
+          <span>10 questions</span>
+          <span class="copy-dot">♡</span>
+          <span>1 point each</span>
+          <span class="copy-dot">♡</span>
+          <span>No cheating 👀</span>
         </p>
 
         <div class="name-entry">
-          <label for="playerName">Your name</label>
+          <label for="playerName"><span class="label-heart">♡</span> Your name</label>
           <input id="playerName" type="text" maxlength="24" placeholder="Enter your name..." autocomplete="name" />
           <p class="name-error" id="nameError"></p>
         </div>
@@ -52,7 +60,7 @@
           <span>TINA'S 22ND</span>
         </div>
 
-        <button class="primary-btn" id="startBtn">START THE QUIZ</button>
+        <button class="primary-btn sparkle-btn" id="startBtn"><span>START THE QUIZ</span><span aria-hidden="true">✦</span></button>
       </div>
     </section>
 
@@ -176,13 +184,13 @@
       </div>
     </div>
 
-      <p class="version-badge">v1.1.0</p>
+      <p class="version-badge">v1.2.0</p>
   </main>
 
   <div class="confetti-container" id="confettiContainer" aria-hidden="true"></div>
 
   <script>
-    const APP_VERSION = "1.1.0";
+    const APP_VERSION = "1.2.0";
     console.log("Tina Birthday Quiz version", APP_VERSION);
 
     // SHARED LEADERBOARD:
