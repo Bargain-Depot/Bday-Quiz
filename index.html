@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.2.2" />
+  <link rel="stylesheet" href="style.css?v=1.2.3" />
 </head>
 <body>
 
@@ -67,6 +67,9 @@
             <strong>BACK TO PARTY VOTING</strong>
             <small>You already finished the quiz</small>
           </span>
+        </button>
+        <button class="legacy-vote-link" id="legacyVoteLink" type="button">
+          Already finished the quiz? Go straight to voting →
         </button>
       </div>
     </section>
@@ -191,13 +194,13 @@
       </div>
     </div>
 
-      <p class="version-badge">v1.2.2</p>
+      <p class="version-badge">v1.2.3</p>
   </main>
 
   <div class="confetti-container" id="confettiContainer" aria-hidden="true"></div>
 
   <script>
-    const APP_VERSION = "1.2.2";
+    const APP_VERSION = "1.2.3";
     console.log("Tina Birthday Quiz version", APP_VERSION);
 
     // SHARED LEADERBOARD:
@@ -240,6 +243,7 @@
     const votingScreen = document.getElementById("votingScreen");
     const votingBtn = document.getElementById("votingBtn");
     const returnVoteBtn = document.getElementById("returnVoteBtn");
+    const legacyVoteLink = document.getElementById("legacyVoteLink");
     const backToResultsBtn = document.getElementById("backToResultsBtn");
     const categoriesList = document.getElementById("categoriesList");
     const voteStatus = document.getElementById("voteStatus");
@@ -460,7 +464,28 @@
     }
 
 
+    function migrateLegacyCompletion() {
+      if (localStorage.getItem("tinaQuizCompleted") === "yes") return;
+
+      // Older versions did not save the new completion flag.
+      // If this phone already has quiz/voting evidence, treat it as returning.
+      let hasLegacyQuizScore = false;
+      try {
+        const oldScores = JSON.parse(localStorage.getItem("tinaBirthdayLeaderboard") || "[]");
+        hasLegacyQuizScore = Array.isArray(oldScores) && oldScores.length > 0;
+      } catch {}
+
+      const hasSavedScore = localStorage.getItem("tinaQuizLastScore") !== null;
+      const hasSavedName = !!localStorage.getItem("tinaQuizPlayerName");
+      const hasVoterId = !!localStorage.getItem("tinaBirthdayVoterId");
+
+      if (hasLegacyQuizScore || hasSavedScore || (hasSavedName && hasVoterId)) {
+        localStorage.setItem("tinaQuizCompleted", "yes");
+      }
+    }
+
     function hasCompletedQuiz() {
+      migrateLegacyCompletion();
       return localStorage.getItem("tinaQuizCompleted") === "yes";
     }
 
@@ -474,8 +499,10 @@
     function updateReturningGuestButton() {
       if (hasCompletedQuiz()) {
         returnVoteBtn.classList.remove("hidden");
+        legacyVoteLink.classList.add("hidden");
       } else {
         returnVoteBtn.classList.add("hidden");
+        legacyVoteLink.classList.remove("hidden");
       }
     }
 
@@ -724,6 +751,41 @@
     playerNameInput.addEventListener("input", () => { if (playerNameInput.value.trim()) nameError.textContent = ""; });
     playerNameInput.addEventListener("keydown", event => { if (event.key === "Enter") startBtn.click(); });
     backBtn.addEventListener("click", () => { if (currentQuestion > 0) { currentQuestion--; renderQuestion(); } });
+
+    legacyVoteLink.addEventListener("click", async () => {
+      // This is mainly for guests who completed the quiz before v1.2.2 existed.
+      localStorage.setItem("tinaQuizCompleted", "yes");
+      if (!localStorage.getItem("tinaQuizPlayerName")) {
+        localStorage.setItem("tinaQuizPlayerName", "Guest");
+      }
+      updateReturningGuestButton();
+      playerName = localStorage.getItem("tinaQuizPlayerName") || "Guest";
+      showScreen(votingScreen);
+      await renderVoting();
+    });
+
+    async function checkForSiteUpdate() {
+      try {
+        const response = await fetch(`version.json?t=${Date.now()}`, {
+          cache: "no-store"
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data.version && data.version !== APP_VERSION) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("v", data.version);
+          window.location.replace(url.toString());
+        }
+      } catch {}
+    }
+
+    // Check quickly on load, whenever they return to the tab, and every 15 seconds.
+    checkForSiteUpdate();
+    window.addEventListener("focus", checkForSiteUpdate);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) checkForSiteUpdate();
+    });
+    setInterval(checkForSiteUpdate, 15000);
 
     returnVoteBtn.addEventListener("click", async () => {
       playerName = localStorage.getItem("tinaQuizPlayerName") || "Guest";
