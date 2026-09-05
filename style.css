@@ -1148,3 +1148,23 @@ body::before {
     max-width: 100%;
   }
 }
+
+
+/* v1.2.3 — legacy completion recovery + instant-update helper */
+.legacy-vote-link {
+  display: block;
+  margin: 13px auto 0;
+  border: 0;
+  background: transparent;
+  color: var(--burgundy);
+  font-size: .72rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  opacity: .76;
+}
+
+.legacy-vote-link:hover {
+  opacity: 1;
+}
