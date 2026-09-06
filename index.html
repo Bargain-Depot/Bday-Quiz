@@ -7,12 +7,12 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="app-version" content="1.3.3" />
+  <meta name="app-version" content="1.4.0" />
   <title>How Well Do You Know Tina?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.3.3" />
+  <link rel="stylesheet" href="style.css?v=1.4.0" />
 </head>
 <body>
 
@@ -234,17 +234,66 @@
           </div>
 
           <div class="admin-category-list" id="adminCategoryList"></div>
+
+          <div class="host-divider" aria-hidden="true"></div>
+
+          <section class="group-randomizer-panel" aria-labelledby="groupRandomizerTitle">
+            <div class="randomizer-heading">
+              <div>
+                <p class="eyebrow">GROUP AWARDS</p>
+                <h2 id="groupRandomizerTitle">Group Randomizer</h2>
+              </div>
+              <span class="randomizer-icon" aria-hidden="true">🎲</span>
+            </div>
+
+            <p class="modal-copy randomizer-copy">
+              Randomize all 19 guests into four balanced groups for each group-performance category.
+              Each category saves its own groups.
+            </p>
+
+            <div class="randomizer-category-tabs" role="tablist" aria-label="Group award category">
+              <button class="randomizer-tab active" type="button" data-randomizer-category="bruno" role="tab" aria-selected="true">Bruno Mars</button>
+              <button class="randomizer-tab" type="button" data-randomizer-category="2000s" role="tab" aria-selected="false">2000s</button>
+              <button class="randomizer-tab" type="button" data-randomizer-category="disney" role="tab" aria-selected="false">Disney</button>
+            </div>
+
+            <div class="randomizer-current">
+              <p class="randomizer-label">CURRENT CATEGORY</p>
+              <h3 id="randomizerCategoryTitle">Best Bruno Mars Performance</h3>
+              <p class="randomizer-status" id="randomizerStatus">Not randomized yet</p>
+            </div>
+
+            <div class="randomizer-actions">
+              <button class="primary-btn randomize-btn" id="randomizeGroupsBtn" type="button">🎲 RANDOMIZE 4 GROUPS</button>
+              <button class="secondary-btn randomize-all-btn" id="randomizeAllGroupsBtn" type="button">RANDOMIZE ALL 3 CATEGORIES</button>
+            </div>
+
+            <div class="randomizer-animation hidden" id="randomizerAnimation" aria-live="polite">
+              <span>✦</span><strong>Mixing up the groups...</strong><span>✦</span>
+            </div>
+
+            <div class="randomizer-groups" id="randomizerGroups" aria-live="polite">
+              <div class="randomizer-empty">
+                Choose a category and tap <strong>Randomize 4 Groups</strong>.
+              </div>
+            </div>
+
+            <div class="randomizer-footer-actions">
+              <button class="text-btn hidden" id="copyGroupsBtn" type="button">Copy groups</button>
+              <button class="text-btn danger-text-btn hidden" id="clearGroupsBtn" type="button">Clear this category</button>
+            </div>
+          </section>
         </div>
       </div>
     </div>
 
-      <p class="version-badge">v1.3.3</p>
+      <p class="version-badge">v1.4.0</p>
   </main>
 
   <div class="confetti-container" id="confettiContainer" aria-hidden="true"></div>
 
   <script>
-    const APP_VERSION = "1.3.3";
+    const APP_VERSION = "1.4.0";
     console.log("Tina Birthday Quiz version", APP_VERSION);
 
     // SHARED LEADERBOARD:
@@ -263,6 +312,21 @@
       { question: "Who is Tina's least favorite teacher?", answers: ["Ms. Onofri", "Mr. Biscuit", "Mr. Aliberte", "Mr. Downey"], correctAnswer: "Mr. Biscuit" },
       { question: "What sport did Tina play in 9th grade?", answers: ["Basketball", "Soccer", "Tennis", "Football"], correctAnswer: "Basketball" }
     ];
+
+    const GROUP_PARTICIPANTS = [
+      "Tina", "Saoussen", "Vina", "Hanna", "Alaa", "Sophia", "Sofia", "Thalia", "Dulce",
+      "Jayla", "Gianna", "Summer", "Melanie", "Anwar", "Schneider", "Christian", "Josh",
+      "Jovanny", "Amine"
+    ];
+
+    const GROUP_AWARD_CATEGORIES = {
+      bruno: "Best Bruno Mars Performance",
+      "2000s": "Best 2000s Performance",
+      disney: "Best Disney Performance"
+    };
+
+    const GROUP_SIZES = [5, 5, 5, 4];
+    let activeRandomizerCategory = "bruno";
 
     let currentQuestion = 0;
     let selectedAnswers = Array(questions.length).fill(null);
@@ -311,6 +375,15 @@
     const createCategoryBtn = document.getElementById("createCategoryBtn");
     const createCategoryError = document.getElementById("createCategoryError");
     const adminCategoryList = document.getElementById("adminCategoryList");
+    const randomizerCategoryTitle = document.getElementById("randomizerCategoryTitle");
+    const randomizerStatus = document.getElementById("randomizerStatus");
+    const randomizerGroups = document.getElementById("randomizerGroups");
+    const randomizerAnimation = document.getElementById("randomizerAnimation");
+    const randomizeGroupsBtn = document.getElementById("randomizeGroupsBtn");
+    const randomizeAllGroupsBtn = document.getElementById("randomizeAllGroupsBtn");
+    const copyGroupsBtn = document.getElementById("copyGroupsBtn");
+    const clearGroupsBtn = document.getElementById("clearGroupsBtn");
+    const randomizerTabs = document.querySelectorAll(".randomizer-tab");
     const refreshAdminBtn = document.getElementById("refreshAdminBtn");
     let adminPin = "";
 
@@ -948,6 +1021,219 @@
     });
 
     backToResultsBtn.addEventListener("click", () => showScreen(resultScreen));
+
+
+    function randomizerStorageKey(categoryKey) {
+      return `tinaGroupRandomizer_${categoryKey}`;
+    }
+
+    function secureShuffle(items) {
+      const arr = [...items];
+
+      function randomIndex(maxInclusive) {
+        if (window.crypto && window.crypto.getRandomValues) {
+          const max = maxInclusive + 1;
+          const limit = Math.floor(0x100000000 / max) * max;
+          const buf = new Uint32Array(1);
+          let n;
+          do {
+            window.crypto.getRandomValues(buf);
+            n = buf[0];
+          } while (n >= limit);
+          return n % max;
+        }
+        return Math.floor(Math.random() * (maxInclusive + 1));
+      }
+
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = randomIndex(i);
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function buildBalancedGroups() {
+      const shuffled = secureShuffle(GROUP_PARTICIPANTS);
+      const groups = [];
+      let cursor = 0;
+
+      GROUP_SIZES.forEach(size => {
+        groups.push(shuffled.slice(cursor, cursor + size));
+        cursor += size;
+      });
+
+      return groups;
+    }
+
+    function getSavedGroups(categoryKey) {
+      try {
+        const raw = localStorage.getItem(randomizerStorageKey(categoryKey));
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.groups) || parsed.groups.length !== 4) return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveGroups(categoryKey, groups) {
+      const payload = {
+        category: GROUP_AWARD_CATEGORIES[categoryKey],
+        groups,
+        createdAt: new Date().toISOString()
+      };
+      localStorage.setItem(randomizerStorageKey(categoryKey), JSON.stringify(payload));
+      return payload;
+    }
+
+    function formatGeneratedTime(isoString) {
+      if (!isoString) return "";
+      const date = new Date(isoString);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+
+    function renderRandomizer(categoryKey = activeRandomizerCategory) {
+      activeRandomizerCategory = categoryKey;
+      randomizerCategoryTitle.textContent = GROUP_AWARD_CATEGORIES[categoryKey];
+
+      randomizerTabs.forEach(tab => {
+        const active = tab.dataset.randomizerCategory === categoryKey;
+        tab.classList.toggle("active", active);
+        tab.setAttribute("aria-selected", active ? "true" : "false");
+      });
+
+      const saved = getSavedGroups(categoryKey);
+
+      if (!saved) {
+        randomizerStatus.textContent = "Not randomized yet";
+        randomizerGroups.innerHTML = `
+          <div class="randomizer-empty">
+            Tap <strong>Randomize 4 Groups</strong> to split all 19 people into groups of 5, 5, 5, and 4.
+          </div>
+        `;
+        randomizeGroupsBtn.innerHTML = "🎲 RANDOMIZE 4 GROUPS";
+        copyGroupsBtn.classList.add("hidden");
+        clearGroupsBtn.classList.add("hidden");
+        return;
+      }
+
+      const generated = formatGeneratedTime(saved.createdAt);
+      randomizerStatus.textContent = generated ? `Saved • randomized at ${generated}` : "Saved";
+      randomizeGroupsBtn.innerHTML = "🎲 RANDOMIZE AGAIN";
+
+      randomizerGroups.innerHTML = saved.groups.map((group, index) => `
+        <article class="randomizer-group-card">
+          <div class="group-card-head">
+            <span class="group-number">GROUP ${index + 1}</span>
+            <span class="group-count">${group.length} people</span>
+          </div>
+          <div class="group-members">
+            ${group.map(name => `<span class="group-member">${escapeHtml(name)}</span>`).join("")}
+          </div>
+        </article>
+      `).join("");
+
+      copyGroupsBtn.classList.remove("hidden");
+      clearGroupsBtn.classList.remove("hidden");
+    }
+
+    async function animateRandomizer() {
+      randomizerAnimation.classList.remove("hidden");
+      randomizerGroups.classList.add("randomizer-shuffling");
+      randomizeGroupsBtn.disabled = true;
+      randomizeAllGroupsBtn.disabled = true;
+
+      await new Promise(resolve => setTimeout(resolve, 950));
+
+      randomizerAnimation.classList.add("hidden");
+      randomizerGroups.classList.remove("randomizer-shuffling");
+      randomizeGroupsBtn.disabled = false;
+      randomizeAllGroupsBtn.disabled = false;
+    }
+
+    async function randomizeCurrentCategory() {
+      const existing = getSavedGroups(activeRandomizerCategory);
+
+      if (existing) {
+        const confirmed = confirm(
+          `Randomize ${GROUP_AWARD_CATEGORIES[activeRandomizerCategory]} again?\n\nThis will replace the saved groups for this category.`
+        );
+        if (!confirmed) return;
+      }
+
+      await animateRandomizer();
+      saveGroups(activeRandomizerCategory, buildBalancedGroups());
+      renderRandomizer(activeRandomizerCategory);
+    }
+
+    async function randomizeAllCategories() {
+      const hasAnySaved = Object.keys(GROUP_AWARD_CATEGORIES).some(key => getSavedGroups(key));
+
+      if (hasAnySaved) {
+        const confirmed = confirm(
+          "Randomize all three group-award categories again?\n\nAny saved groups for Bruno Mars, 2000s, and Disney will be replaced."
+        );
+        if (!confirmed) return;
+      }
+
+      await animateRandomizer();
+
+      Object.keys(GROUP_AWARD_CATEGORIES).forEach(key => {
+        saveGroups(key, buildBalancedGroups());
+      });
+
+      renderRandomizer(activeRandomizerCategory);
+      alert("All three categories have been randomized and saved! 💗");
+    }
+
+    function groupsAsText(categoryKey) {
+      const saved = getSavedGroups(categoryKey);
+      if (!saved) return "";
+
+      const lines = [GROUP_AWARD_CATEGORIES[categoryKey], ""];
+      saved.groups.forEach((group, index) => {
+        lines.push(`Group ${index + 1}: ${group.join(", ")}`);
+      });
+      return lines.join("\n");
+    }
+
+    async function copyCurrentGroups() {
+      const text = groupsAsText(activeRandomizerCategory);
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = copyGroupsBtn.textContent;
+        copyGroupsBtn.textContent = "Copied! ✓";
+        setTimeout(() => copyGroupsBtn.textContent = original, 1400);
+      } catch {
+        alert(text);
+      }
+    }
+
+    function clearCurrentGroups() {
+      if (!getSavedGroups(activeRandomizerCategory)) return;
+
+      const confirmed = confirm(
+        `Clear the saved groups for ${GROUP_AWARD_CATEGORIES[activeRandomizerCategory]}?\n\nYou can randomize it again afterward.`
+      );
+      if (!confirmed) return;
+
+      localStorage.removeItem(randomizerStorageKey(activeRandomizerCategory));
+      renderRandomizer(activeRandomizerCategory);
+    }
+
+    randomizerTabs.forEach(tab => {
+      tab.addEventListener("click", () => renderRandomizer(tab.dataset.randomizerCategory));
+    });
+
+    randomizeGroupsBtn.addEventListener("click", randomizeCurrentCategory);
+    randomizeAllGroupsBtn.addEventListener("click", randomizeAllCategories);
+    copyGroupsBtn.addEventListener("click", copyCurrentGroups);
+    clearGroupsBtn.addEventListener("click", clearCurrentGroups);
+    renderRandomizer();
 
     adminOpenBtn.addEventListener("click", openAdminModal);
     adminCloseBtn.addEventListener("click", closeAdminModal);
