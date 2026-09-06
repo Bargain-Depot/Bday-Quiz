@@ -1168,3 +1168,81 @@ body::before {
 .legacy-vote-link:hover {
   opacity: 1;
 }
+
+/* Main homepage + accessibility v1.3 */
+.home-card {
+  position: relative;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  padding: 64px 38px 42px;
+  text-align: center;
+}
+.home-script { margin-top: 12px; font-size: clamp(4.8rem, 15vw, 7.2rem); line-height: .9; }
+.home-title {
+  margin: 18px auto 10px;
+  max-width: 520px;
+  color: var(--burgundy);
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: clamp(1.9rem, 6vw, 2.8rem);
+  line-height: 1.08;
+}
+.home-copy { max-width: 470px; margin: 0 auto; color: #71443b; line-height: 1.6; font-size: .98rem; }
+.home-options { display: grid; gap: 14px; margin: 30px auto 0; max-width: 470px; }
+.home-option {
+  width: 100%;
+  min-height: 92px;
+  display: grid;
+  grid-template-columns: 54px 1fr 24px;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 17px;
+  border: 1.5px solid rgba(116,29,19,.16);
+  border-radius: 22px;
+  color: var(--burgundy);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(91,47,28,.08);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.home-option:hover { transform: translateY(-2px); border-color: var(--rose); box-shadow: 0 14px 27px rgba(91,47,28,.11); }
+.home-option-quiz { background: linear-gradient(135deg, rgba(248,216,223,.62), rgba(255,255,255,.82)); }
+.home-option-vote { background: linear-gradient(135deg, rgba(255,245,220,.95), rgba(248,216,223,.35)); }
+.home-option-icon {
+  width: 48px; height: 48px; display: grid; place-items: center;
+  border-radius: 50%; background: rgba(248,216,223,.58); font-size: 1.55rem;
+}
+.home-option-vote .home-option-icon { background: rgba(244,226,184,.72); }
+.home-option-text { display: grid; gap: 5px; }
+.home-option-text strong { font-size: .88rem; letter-spacing: .12em; }
+.home-option-text small { color: #755047; font-size: .78rem; line-height: 1.3; font-weight: 600; }
+.home-option-arrow { font-size: 1.35rem; color: var(--rose); }
+.home-access-note { margin-top: 22px; color: #886158; font-size: .75rem; }
+.home-nav-btn { border: 0; background: transparent; cursor: pointer; padding: 8px 4px; text-decoration: none; }
+
+.home-option:focus-visible,
+.primary-btn:focus-visible,
+.secondary-btn:focus-visible,
+.answer-btn:focus-visible,
+.nominee-btn:focus-visible,
+.text-btn:focus-visible,
+.admin-link:focus-visible,
+.return-vote-btn:focus-visible,
+.legacy-vote-link:focus-visible,
+.home-nav-btn:focus-visible {
+  outline: 4px solid rgba(217,111,136,.42);
+  outline-offset: 3px;
+}
+
+button, input, textarea { touch-action: manipulation; }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-option, .primary-btn, .answer-btn, .nominee-btn { transition: none !important; }
+}
+
+@media (max-width: 600px) {
+  .home-card { padding: 56px 20px 32px; }
+  .home-script { font-size: clamp(4.8rem, 24vw, 6.7rem); }
+  .home-title { font-size: clamp(1.85rem, 9vw, 2.5rem); }
+  .home-option { min-height: 88px; grid-template-columns: 50px 1fr 20px; border-radius: 19px; padding: 14px; }
+  .home-option-icon { width: 44px; height: 44px; font-size: 1.4rem; }
+}
