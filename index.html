@@ -7,16 +7,44 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="app-version" content="1.2.3" />
+  <meta name="app-version" content="1.3.0" />
   <title>How Well Do You Know Tina?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.2.3" />
+  <link rel="stylesheet" href="style.css?v=1.3.0" />
 </head>
 <body>
 
   <main class="app-shell">
+
+    <section class="screen active" id="homeScreen" aria-labelledby="homeTitle">
+      <div class="card home-card">
+        <div class="cute-topper" aria-hidden="true"><span>✦</span><span class="tiny-heart">♡</span><span>✦</span></div>
+        <div class="bow" aria-hidden="true"><i></i><b></b><i></i></div>
+        <p class="eyebrow">TINA'S 22ND BIRTHDAY</p>
+        <h1 class="script-title home-script">Welcome!</h1>
+        <h2 id="homeTitle" class="home-title">What would you like to do?</h2>
+        <p class="home-copy">Take the birthday quiz or jump into the live karaoke voting.</p>
+
+        <div class="home-options" role="group" aria-label="Choose an activity">
+          <button class="home-option home-option-quiz" id="homeQuizBtn" type="button">
+            <span class="home-option-icon" aria-hidden="true">💗</span>
+            <span class="home-option-text"><strong>TAKE THE QUIZ</strong><small>See how well you know Tina</small></span>
+            <span class="home-option-arrow" aria-hidden="true">→</span>
+          </button>
+
+          <button class="home-option home-option-vote" id="homeVotingBtn" type="button">
+            <span class="home-option-icon" aria-hidden="true">🎤</span>
+            <span class="home-option-text"><strong>PARTY VOTING</strong><small>Vote for karaoke performances</small></span>
+            <span class="home-option-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <p class="home-access-note">Both options are available anytime during the party.</p>
+      </div>
+    </section>
+
 
     <!-- Decorative birthday doodles -->
     <div class="doodle doodle-1">✦</div>
@@ -27,7 +55,7 @@
     <div class="doodle doodle-6">♡</div>
 
     <!-- INTRO SCREEN -->
-    <section class="screen active" id="introScreen">
+    <section class="screen" id="introScreen">
       <div class="card intro-card">
         <div class="cute-topper" aria-hidden="true">
           <span>✦</span><span class="tiny-heart">♡</span><span>✦</span>
@@ -78,7 +106,7 @@
     <section class="screen" id="quizScreen">
       <div class="quiz-wrap">
         <div class="quiz-top">
-          <p class="mini-brand">Tina's 22nd</p>
+          <button class="mini-brand home-nav-btn" type="button" data-go-home aria-label="Go to main menu">Tina's 22nd</button>
           <p class="counter" id="counter">Question 1 of 10</p>
         </div>
 
@@ -134,7 +162,7 @@
     <section class="screen" id="votingScreen">
       <div class="quiz-wrap voting-wrap">
         <div class="quiz-top">
-          <p class="mini-brand">Tina's 22nd</p>
+          <button class="mini-brand home-nav-btn" type="button" data-go-home aria-label="Go to main menu">Tina's 22nd</button>
           <button class="text-btn" id="backToResultsBtn" type="button">← RESULTS</button>
         </div>
 
@@ -194,13 +222,13 @@
       </div>
     </div>
 
-      <p class="version-badge">v1.2.3</p>
+      <p class="version-badge">v1.3.0</p>
   </main>
 
   <div class="confetti-container" id="confettiContainer" aria-hidden="true"></div>
 
   <script>
-    const APP_VERSION = "1.2.3";
+    const APP_VERSION = "1.3.0";
     console.log("Tina Birthday Quiz version", APP_VERSION);
 
     // SHARED LEADERBOARD:
@@ -226,6 +254,9 @@
     let playerName = "";
     let quizSubmitted = false;
 
+    const homeScreen = document.getElementById("homeScreen");
+    const homeQuizBtn = document.getElementById("homeQuizBtn");
+    const homeVotingBtn = document.getElementById("homeVotingBtn");
     const introScreen = document.getElementById("introScreen");
     const quizScreen = document.getElementById("quizScreen");
     const resultScreen = document.getElementById("resultScreen");
@@ -786,6 +817,20 @@
       if (!document.hidden) checkForSiteUpdate();
     });
     setInterval(checkForSiteUpdate, 15000);
+
+    homeQuizBtn.addEventListener("click", () => {
+      showScreen(introScreen);
+    });
+
+    homeVotingBtn.addEventListener("click", async () => {
+      playerName = localStorage.getItem("tinaQuizPlayerName") || "Guest";
+      showScreen(votingScreen);
+      await renderVoting();
+    });
+
+    document.querySelectorAll("[data-go-home]").forEach(button => {
+      button.addEventListener("click", () => showScreen(homeScreen));
+    });
 
     returnVoteBtn.addEventListener("click", async () => {
       playerName = localStorage.getItem("tinaQuizPlayerName") || "Guest";
